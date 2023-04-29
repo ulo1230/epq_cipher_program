@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/share/Projects/Cipher/Ciphers/Caesar Cipher/build",
+  "command": "/usr/bin/g++   -g -o CMakeFiles/test.dir/test.cpp.o -c \"/share/Projects/Cipher/Ciphers/Caesar Cipher/test.cpp\"",
+  "file": "/share/Projects/Cipher/Ciphers/Caesar Cipher/test.cpp"
+}
+]

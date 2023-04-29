@@ -1,0 +1,3 @@
+/share/Projects/Cipher/Ciphers/Caesar Cipher/build/CMakeFiles/test.dir
+/share/Projects/Cipher/Ciphers/Caesar Cipher/build/CMakeFiles/edit_cache.dir
+/share/Projects/Cipher/Ciphers/Caesar Cipher/build/CMakeFiles/rebuild_cache.dir

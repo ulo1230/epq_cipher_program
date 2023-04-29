@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Frequency Analysis</title>
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+	</head>
+
+	<body>
+		<div class="container" style="margin-top:20px">
+			<h3>Frequency Analysis</h3>
+			<hr>
+
+			<div class="container-fluid">
+				<div class="row mb-3">
+					<textarea class="textarea col-sm-8" name="input-text" style="min-height: 400px"></textarea>
+
+					<div class="col-sm-4">
+						<div class="form-group row align-items-center frequencies-list overflow-scroll" style="max-height: 50vh;">
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="form-group row align-items-center mb-3">
+						<label class="col-sm-2 col-form-label">Relative Freq</label>
+						<div class="col-sm-3">
+							<input type="checkbox" class="form-check-input" name="opt-rel-freq" onchange="outputText()">
+						</div>
+					</div>
+
+					<div class="form-group row align-items-center mb-3">
+						<label class="col-sm-2 col-form-label">N-gram Length</label>
+						<div class="col-sm-3">
+							<input type="number" class="form-control" value="1" name="opt-n" onchange="outputText()">
+						</div>
+					</div>
+
+					<div class="form-group row align-items-center mb-3">
+						<label class="col-sm-2 col-form-label">Ignore Spaces</label>
+						<div class="col-sm-3">
+							<input type="checkbox" class="form-check-input" name="opt-ignore-spaces" onchange="outputText()" checked>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="utils.js"></script>
+		<script>
+			outputText();
+			$("textarea[name=input-text]").oninput = (e) => outputText();
+
+			function getOptions() {
+				return {
+					relative: $("[name=opt-rel-freq]").checked,
+					ignoreSpaces: $("[name=opt-ignore-spaces]").checked,
+					n: parseInt($("[name=opt-n]").value),
+				};
+			}
+
+			function findNgrams(text, n) {
+				let ngrams = {};
+
+				for(let i = 0; i < text.length - n + 1; i++) {
+					let s = text.substr(i, n);
+					if(!(s in ngrams)) ngrams[s] = [];
+					ngrams[s].push(i);
+				}
+
+				return ngrams;
+			}
+
+			function outputText() {
+				let text = $("textarea[name=input-text]").value;
+				let op = getOptions();
+
+				if(op.ignoreSpaces)
+					text = text.replaceAll(" ", "");
+
+				let ngrams = findNgrams(text, op.n);
+				ngrams = Object.keys(ngrams).map(k => { return { k: k, v: ngrams[k].length }; });
+				ngrams = ngrams.sort((a, b) => a.v > b.v ? -1 : 1);
+			
+				if(op.relative) {
+					let total = ngrams.reduce((s, a) => s + a.v, 0);
+
+					for(const x of ngrams) {
+						x.v *= (100 / total);
+					}
+				}
+
+
+				let el = $(".frequencies-list");
+				el.innerHTML = "";
+
+				for(const x of ngrams) {
+					el.appendChild(htmlToElement(`<div class="row align-items-center">
+						<label class="col col-form-label" style="font-family:monospace">${x.k}</label>
+						<span class="col-sm-6">${x.v.toFixed(1)}</span>
+					</div>`));
+				}
+			}
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,3 @@
+
+initial temperature
+number of primary iterations

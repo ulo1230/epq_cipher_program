@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Arrange Text</title>
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+
+		<style type="text/css">
+			textarea {
+				font-family: monospace;
+				font-size: 13pt;
+				resize: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container" style="margin-top:20px">
+			<h3>Arrange Text</h3>
+			<hr>
+
+			<div class="container-fluid">
+				<div class="row mb-3">
+					<textarea class="textarea col-sm-6" style="min-height: 400px" spellcheck="false" name="input-text"></textarea>
+					<textarea class="textarea col-sm-3" style="min-height: 400px" spellcheck="false" name="output-text" disabled></textarea>
+				</div>
+
+				<div class="row">
+					<div class="form-group row align-items-center mb-3 col-sm-8">
+						<label class="col-lg-3 col-form-label" >Columns</label>
+						<div class="col-sm-3">
+							<input type="number" name="option-column-count" class="form-control" onchange="handleText()" value="5">
+						</div>
+					</div>
+
+					<div class="form-group row align-items-center mb-3 col-sm-8">
+						<label class="col-lg-3 col-form-label" >Arrange Type</label>
+						<div class="col-sm-3">
+							<select class="form-select" name="option-arrange" onchange="handleText()">
+								<option value="row">Row</option>
+								<option value="column">Column</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group row align-items-center mb-3">
+						<label class="col-sm-2 col-form-label">Ignore Spaces</label>
+						<div class="col-sm-3">
+							<input type="checkbox" class="form-check-input" name="option-ignore-spaces" onchange="handleText()" checked>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="utils.js"></script>
+		<script>
+			handleText();
+			$("textarea[name=input-text]").oninput = (e) => handleText();
+
+			function getOptions() {
+				return {
+					type: $("[name=option-arrange]").value,
+					n: parseInt($("[name=option-column-count]").value),
+					ignoreSpaces: $("[name=option-ignore-spaces]").checked
+				};
+			}
+
+			function handleText(text) {
+				text = text || $("textarea[name=input-text]").value;
+				$("textarea[name=output-text]").value = arrangeText(text, getOptions());
+			}
+
+			function arrangeText(text, op) {
+				if(op.ignoreSpaces)
+					text = text.replaceAll(" ", "");
+
+				if(op.type === "column") {
+					let cols = [];
+					let li = [];
+					let d = text.length - Math.floor(text.length / op.n) * op.n;
+					let l1 = Math.floor(text.length / op.n);
+					let l2 = Math.floor(text.length / op.n) + 1;
+
+					for(let i = 0; text.length; i++) {
+						let l = i < d ? l2 : l1;
+						cols.push(text.substr(0, l));
+						text = text.substr(l);
+					}
+
+					for(let i = 0; i < l2; i++) {
+						let s = "";
+
+						for(let c of cols) {
+							if(c[i]) s += c[i];
+						}
+
+						if(s.length === 0)
+							break;
+
+						li.push(s);
+					}
+
+
+					return li.join("\n");
+				} else if (op.type ==="row") {
+					let li = [];
+					let s = "";
+
+					for(let i = 0; i < text.length; i++) {
+						if(i !== 0 && i % op.n === 0) {
+							li.push(s);
+							s = "";
+						}
+
+						s += text[i];
+					}
+
+					if(s.length)
+						li.push(s);
+
+					return li.join("\n");
+				}
+			}
+
+		</script>
+	</body>
+</html>
